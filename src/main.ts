@@ -1,27 +1,44 @@
-type Opts = {
+export type Opts = {
   starsPerPx: number
   speedNormal: number
   speedLight: number
   transitionSpeed: number
+  starMaxSize: number
+  starMinSize: number
+  lightSpeedTailLength: number
 }
 
 export class ThruSpace {
-  isSpeedOfLight: boolean = false
+  isLightSpeed: boolean = false
   private canvas: HTMLCanvasElement
   private ctx: CanvasRenderingContext2D
+  private canvasWidth = 0
+  private canvasHeight = 0
   private stars: Star[] = []
   private animationFrameId: number | null = null
   private transitionProgress: number = 0
   private abortController: AbortController = new AbortController()
 
-  private readonly starsPerPx = 0.1
-  private readonly speedNormal = 0.5
-  private readonly speedLight = 15
-  private readonly transitionSpeed: number = 0.2
+  // opts
+  private starsPerPx: number
+  private speedNormal: number
+  private speedLight: number
+  private transitionSpeed: number
+  private starMaxSize: number
+  private starMinSize: number
+  private lightSpeedTailLength: number
   
   constructor(canvas: HTMLCanvasElement, opts?: Partial<Opts>) {
     this.canvas = canvas
-    Object.assign(this, opts)
+
+    this.starsPerPx = opts?.starsPerPx ?? 0.5
+    this.speedNormal = opts?.speedNormal ?? 0.5
+    this.speedLight = opts?.speedLight ?? 15
+    this.transitionSpeed = opts?.transitionSpeed ?? 0.2
+    this.starMaxSize = opts?.starMaxSize ?? 3
+    this.starMinSize = opts?.starMinSize ?? 1
+    this.lightSpeedTailLength = opts?.lightSpeedTailLength ?? 0.5
+
     this.ctx = canvas.getContext('2d') as CanvasRenderingContext2D
     this.resizeCanvas()
     window.addEventListener('resize', () => this.resizeCanvas(), { signal: this.abortController.signal })
@@ -29,19 +46,25 @@ export class ThruSpace {
   }
 
   private resizeCanvas() {
-    this.canvas.width = window.innerWidth
-    this.canvas.height = window.innerHeight
+    this.canvasWidth = window.innerWidth
+    this.canvasHeight = window.innerHeight
+    const ratio = window.devicePixelRatio || 1
+    this.canvas.width = this.canvasWidth * ratio
+    this.canvas.height = this.canvasHeight * ratio
+    this.canvas.style.width = this.canvasWidth + 'px'
+    this.canvas.style.height = this.canvasHeight + 'px'
+    this.ctx.scale(ratio, ratio)
     this.initStars()
   }
 
   private initStars() {
     this.stars = []
-    const starCount = this.canvas.width * this.starsPerPx
+    const starCount = this.canvasWidth * this.starsPerPx
     for (let i = 0; i < starCount; i++) {
       this.stars.push(new Star({
-        x: Math.random() * this.canvas.width, 
-        y: Math.random() * this.canvas.height,
-        size: Math.random() * 1 + 1,
+        x: Math.random() * this.canvasWidth, 
+        y: Math.random() * this.canvasHeight,
+        size: this.starMinSize + (Math.random() * (this.starMaxSize - this.starMinSize)),
         opacity: Math.random() * 0.7 + 0.3,
         speedFactor: Math.random() * 0.002 + 0.001,
       }))
@@ -63,19 +86,19 @@ export class ThruSpace {
     return this
   }
 
-  speedOfLight() {
-    this.isSpeedOfLight = true
+  lightSpeed() {
+    this.isLightSpeed = true
   }
 
   normalSpeed() {
-    this.isSpeedOfLight = false
+    this.isLightSpeed = false
   }
 
   toggleSpeed() {
-    if (this.isSpeedOfLight) {
+    if (this.isLightSpeed) {
       this.normalSpeed()
     } else {
-      this.speedOfLight()
+      this.lightSpeed()
     }
   }
 
@@ -86,17 +109,21 @@ export class ThruSpace {
 
   private animate() {
     this.animationFrameId = requestAnimationFrame(() => this.animate())
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
+    this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
     
-    if (this.isSpeedOfLight) {
-      this.transitionProgress = Math.min(1, this.transitionProgress + (this.transitionSpeed  * 0.1))
+    if (this.isLightSpeed) {
+      if (this.transitionProgress < 1) {
+        this.transitionProgress = Math.min(1, this.transitionProgress + (this.transitionSpeed  * 0.1))
+      }
     } else {
-      this.transitionProgress = Math.max(0, this.transitionProgress - (this.transitionSpeed  * 0.1))
+      if (this.transitionProgress > 0) {
+        this.transitionProgress = Math.max(0, this.transitionProgress - (this.transitionSpeed  * 0.1))
+      }
     }
     
     const currentSpeed = this.speedNormal + (this.speedLight - this.speedNormal) * this.transitionProgress
-    const centerX = this.canvas.width / 2
-    const centerY = this.canvas.height / 2
+    const centerX = this.canvasWidth / 2
+    const centerY = this.canvasHeight / 2
 
     this.stars.forEach(star => {
       const dx = star.x - centerX
@@ -106,32 +133,36 @@ export class ThruSpace {
       star.y += dy * currentSpeed * star.speedFactor
       
       if (star.opacity < star.maxOpacity) {
-        star.opacity += this.isSpeedOfLight ? 0.05 : 0.001
+        star.opacity += !!this.transitionProgress ? 0.05 : 0.001
       }
       
-      if (Math.abs(star.x - centerX) > this.canvas.width / 2 || Math.abs(star.y - centerY) > this.canvas.height / 2) {
-        star.x = Math.random() * this.canvas.width
-        star.y = Math.random() * this.canvas.height
-        star.opacity = 0
-      }
-      
+      // tail line
       this.ctx.beginPath()
-      if (this.transitionProgress > 0) {
-        const streakLength = star.size * 10 * this.transitionProgress
-        const endX = star.x + dx * streakLength * 0.05
-        const endY = star.y + dy * streakLength * 0.05
-        const gradient = this.ctx.createLinearGradient(endX, endY, star.x, star.y)
-        gradient.addColorStop(0, this.getStarFillStyle(star.opacity))
-        gradient.addColorStop(1, 'transparent')
-        this.ctx.strokeStyle = gradient
-        this.ctx.lineWidth = star.size
-        this.ctx.moveTo(endX, endY)
-        this.ctx.lineTo(star.x, star.y)
-        this.ctx.stroke()
-      } else {
-        this.ctx.fillStyle = this.getStarFillStyle(star.opacity)
-        this.ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2)
-        this.ctx.fill()
+      const tailLength = this.transitionProgress * this.lightSpeedTailLength
+      const endX = star.x - dx * tailLength
+      const endY = star.y - dy * tailLength
+      const gradient = this.ctx.createLinearGradient(endX, endY, star.x, star.y)
+      gradient.addColorStop(0, 'transparent')
+      gradient.addColorStop(1, this.getStarFillStyle(star.opacity))
+      this.ctx.strokeStyle = gradient
+      this.ctx.lineWidth = star.size
+      this.ctx.moveTo(endX, endY)
+      this.ctx.lineTo(star.x, star.y)
+      this.ctx.stroke()
+      // circle
+      this.ctx.beginPath()
+      this.ctx.fillStyle = this.getStarFillStyle(star.opacity)
+      this.ctx.arc(star.x, star.y, star.size / 2, 0, Math.PI * 2)
+      this.ctx.fill()
+
+      // check offscreen
+      if (
+        Math.abs(endX - centerX) - star.size > this.canvasWidth / 2 ||
+        Math.abs(endY - centerY) - star.size > this.canvasHeight / 2
+      ) {
+        star.x = Math.random() * this.canvasWidth
+        star.y = Math.random() * this.canvasHeight
+        star.opacity = 0
       }
     })
   }

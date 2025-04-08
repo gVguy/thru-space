@@ -26,6 +26,7 @@ body {
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+  margin: 0;
   font-family: VT323;
 }
 
@@ -35,6 +36,10 @@ h1 {
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  align-items: center;
 }
 
 canvas {
@@ -56,4 +61,21 @@ button {
 }
 button:hover {
   background-color: #61c3fb;
+}
+
+#opts {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+#opts label {
+  display: grid;
+  grid-template-columns: 222px 69px;
+  text-align: left;
+}
+
+#reset {
+  background: none;
+  color: #61c3fb;
+  padding: none;
 }
