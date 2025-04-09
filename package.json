@@ -1,8 +1,17 @@
 {
   "name": "thru-space",
   "description": "Travel through space at light speed!",
-  "keywords": ["animation", "canvas", "fly", "universe", "space", "stars", "light", "speed"],
-  "version": "0.0.3",
+  "keywords": [
+    "animation",
+    "canvas",
+    "fly",
+    "universe",
+    "space",
+    "stars",
+    "light",
+    "speed"
+  ],
+  "version": "0.0.4",
   "type": "module",
   "author": "Ivan Che",
   "license": "MIT",
