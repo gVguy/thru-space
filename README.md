@@ -6,7 +6,9 @@ A tiny dependency-free javascript library for creating an effect of **flying thr
 
 <p align="center">✨ <b><a href="https://gvguy.github.io/thru-space/">Live interactive demo</a></b> ✨</p>
 
-![thru-space in action](https://i.imgur.com/7sKb6Fq.gif)
+<p align="center">
+  <img src="https://i.imgur.com/7sKb6Fq.gif">
+</p>
 
 ## Installation
 
