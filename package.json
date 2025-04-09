@@ -1,7 +1,7 @@
 {
   "name": "thru-space",
   "description": "Travel through space at light speed!",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "author": "Ivan Che",
   "license": "MIT",
@@ -21,7 +21,9 @@
       "types": "./dist/thru-space.d.ts"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "devDependencies": {
     "@types/node": "^22.14.0",
     "typescript": "~5.7.2",
