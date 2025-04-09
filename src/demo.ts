@@ -15,7 +15,7 @@ const create = (opts?: Opts) => new ThruSpace(canvas, opts).start()
 const recreate = () => {
   const wasSpeedOfLight = thruSpace.isLightSpeed
   thruSpace.destroy()
-  thruSpace = create(opts)
+  thruSpace = create(getOpts())
   if (wasSpeedOfLight) {
     thruSpace.lightSpeed()
   }
@@ -27,42 +27,65 @@ const createControl = (key: keyof Opts) => {
   const label = document.createElement('label')
   label.textContent = key
   const input = document.createElement('input')
-  input.type = 'number'
-  input.step = '0.1'
-  input.value = String(opts[key])
-  input.addEventListener('input', (e) => {
+  input.type = 'range'
+  const params = opts[key]
+  input.max = String(params.max)
+  input.min = String(params.min)
+  input.step = String(params.step)
+  input.value = String(params.value)
+  input.addEventListener('change', (e) => {
     onControlChange(key, Number((e.target as HTMLInputElement).value))
   })
   input.id = key
+  const valueDisplay = document.createElement('span')
+  valueDisplay.id = `${key}_value`
+  valueDisplay.textContent = String(params.value)
+  input.addEventListener('input', (e) => {
+    setControlDisplayValue(key, (e.target as HTMLInputElement).value)
+  })
+  label.append(valueDisplay)
   label.append(input)
   optsEl?.append(label)
 }
 const onControlChange = (key: keyof Opts, value: number) => {
-  opts[key] = value
+  opts[key].value = value
   recreate()
 }
+const setControlDisplayValue = (key: keyof Opts, value: number|string) => {
+  document.querySelector(`#${key}_value`)!.textContent = String(value)
+}
 
-const opts: Opts = {
-  starsPerPx: 0,
-  speedNormal: 0,
-  speedLight: 0,
-  transitionSpeed: 0,
-  starMaxSize: 0,
-  starMinSize: 0,
-  lightSpeedTailLength: 0,
+const opts: Record<keyof Opts, { value: number, min: number, max: number, step: number }> = {
+  starsPerPx: { value: 0, min: 0.0001, max: 0.003, step: 0.0001 },
+  speedNormal: { value: 0, min: 0, max: 20, step: 0.1 },
+  speedLight: { value: 0, min: 0, max: 30, step: 0.1 },
+  transitionSpeed: { value: 0, min: 0.01, max: 1, step: 0.01 },
+  starMaxSize: { value: 0, min: 0.5, max: 10, step: 0.5 },
+  starMinSize: { value: 0, min: 0.5, max: 10, step: 0.5 },
+  lightSpeedTailLength: { value: 0, min: 0, max: 0.7, step: 0.05 }
 }
 for (const k in opts) {
-  const key = k as keyof typeof opts
-  opts[key] = thruSpace[key]
+  const key = k as keyof Opts
+  opts[key].value = thruSpace[key]
   createControl(key)
 }
-const defaultOpts = {...opts}
+
+const getOpts = () => Object.fromEntries(
+  Object.entries(opts).map(
+    ([key, { value }]) => [key, value]
+  )
+) as Opts
+
+const defaultOptsValues = {...getOpts()}
 
 resetOptsButton!.addEventListener('click', () => {
-  Object.assign(opts, defaultOpts)
-  for (const key in opts) {
+  for (const k in opts) {
+    const key = k as keyof Opts
+    const defaultValue = defaultOptsValues[key]
+    opts[key].value = defaultValue
     const input = document.getElementById(key) as HTMLInputElement
-    input.value = String(opts[key as keyof Opts])
+    input.value = String(defaultValue)
+    setControlDisplayValue(key, defaultValue)
   }
   recreate()
 })

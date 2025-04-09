@@ -17,7 +17,7 @@ export class ThruSpace {
   private stars: Star[] = []
   private animationFrameId: number | null = null
   private transitionProgress = 0
-  private abortController: AbortController = new AbortController()
+  private resizeObserver: ResizeObserver
 
   // opts
   private starsPerPx: number
@@ -31,56 +31,60 @@ export class ThruSpace {
   constructor(canvas: HTMLCanvasElement, opts?: Partial<Opts>) {
     this.canvas = canvas
 
-    this.starsPerPx = opts?.starsPerPx ?? 0.5
     this.speedNormal = opts?.speedNormal ?? 0.5
     this.speedLight = opts?.speedLight ?? 15
     this.transitionSpeed = opts?.transitionSpeed ?? 0.2
     this.starMaxSize = opts?.starMaxSize ?? 3
     this.starMinSize = opts?.starMinSize ?? 1
-    this.lightSpeedTailLength = opts?.lightSpeedTailLength ?? 0.5
+    this.lightSpeedTailLength = opts?.lightSpeedTailLength ?? 0.3
+    const starsPerPx = opts?.starsPerPx ?? 0.0005
+    const MAX_STARS_PER_PX = 0.05
+    this.starsPerPx = Math.min(starsPerPx, MAX_STARS_PER_PX)
 
-    this.ctx = canvas.getContext('2d') as CanvasRenderingContext2D
-    this.resizeCanvas()
-    window.addEventListener('resize', () => this.resizeCanvas(), { signal: this.abortController.signal })
+    this.ctx = canvas.getContext('2d')!
+
+    this.handleCanvasSize()
     this.initStars()
+    
+    this.resizeObserver = new ResizeObserver(() => {
+      this.handleCanvasSize()
+      this.initStars()
+    })
+    this.resizeObserver.observe(this.canvas)
   }
 
-  private get starOpacitySpeedNormal() {
-    return this.speedNormal * 0.002
-  }
-  private get starOpacitySpeedLight() {
-    return this.speedLight * 0.00333
-  }
-  private get starOpacitySpeed() {
-    if (!!this.transitionProgress)
-      return this.starOpacitySpeedLight
-    return this.starOpacitySpeedNormal
-  }
-
-  private resizeCanvas() {
-    this.canvasWidth = window.innerWidth
-    this.canvasHeight = window.innerHeight
+  private handleCanvasSize() {
+    const rect = this.canvas.getBoundingClientRect()
     const ratio = window.devicePixelRatio || 1
+    if (
+      rect.width == this.canvasWidth * ratio &&
+      rect.height == this.canvasHeight * ratio
+    ) {
+      return
+    }
+    this.canvasWidth = rect.width
+    this.canvasHeight = rect.height
     this.canvas.width = this.canvasWidth * ratio
     this.canvas.height = this.canvasHeight * ratio
-    this.canvas.style.width = this.canvasWidth + 'px'
-    this.canvas.style.height = this.canvasHeight + 'px'
     this.ctx.scale(ratio, ratio)
-    this.initStars()
   }
 
   private initStars() {
     this.stars = []
-    const starCount = this.canvasWidth * this.starsPerPx
+    const starCount = this.getStarCount()
     for (let i = 0; i < starCount; i++) {
-      this.stars.push(new Star({
-        x: Math.random() * this.canvasWidth, 
-        y: Math.random() * this.canvasHeight,
-        size: this.starMinSize + (Math.random() * (this.starMaxSize - this.starMinSize)),
-        opacity: Math.random() * 0.7 + 0.3,
-        speedFactor: Math.random() * 0.002 + 0.001,
-      }))
+      this.addOneStar()
     }
+  }
+
+  private addOneStar() {
+    this.stars.push(new Star({
+      x: Math.random() * this.canvasWidth, 
+      y: Math.random() * this.canvasHeight,
+      size: this.starMinSize + (Math.random() * (this.starMaxSize - this.starMinSize)),
+      opacity: Math.random() * 0.7 + 0.3,
+      speedFactor: Math.random() * 0.002 + 0.001,
+    }))
   }
 
   start() {
@@ -116,7 +120,7 @@ export class ThruSpace {
 
   destroy() {
     this.stop()
-    this.abortController.abort()
+    this.resizeObserver.disconnect()
   }
 
   private animate() {
@@ -137,9 +141,9 @@ export class ThruSpace {
     const centerX = this.canvasWidth / 2
     const centerY = this.canvasHeight / 2
 
-    const starOpacitySpeed = this.starOpacitySpeed
+    const starOpacitySpeed = this.getStarOpacitySpeed()
     
-    this.stars.forEach(star => {
+    for (const star of this.stars) {
       const dx = star.x - centerX
       const dy = star.y - centerY
       
@@ -156,7 +160,7 @@ export class ThruSpace {
       const endX = star.x - dx * tailLength
       const endY = star.y - dy * tailLength
       const gradient = this.ctx.createLinearGradient(endX, endY, star.x, star.y)
-      gradient.addColorStop(0, 'transparent')
+      gradient.addColorStop(0, this.getStarFillStyle(0))
       gradient.addColorStop(1, this.getStarFillStyle(star.opacity))
       this.ctx.strokeStyle = gradient
       this.ctx.lineWidth = star.size
@@ -178,11 +182,24 @@ export class ThruSpace {
         star.y = Math.random() * this.canvasHeight
         star.opacity = 0
       }
-    })
+    }
   }
 
   private getStarFillStyle(opacity: number) {
     return `rgba(255, 255, 255, ${opacity})`
+  }
+
+  private getStarCount() {
+    return this.canvasWidth * this.canvasHeight * this.starsPerPx
+  }
+
+  private getStarOpacitySpeed() {
+    const opacitySpeedNormal = this.speedNormal * 0.002
+    const opacitySpeedLight = this.speedLight * 0.00333
+    if (!this.transitionProgress) {
+      return opacitySpeedNormal
+    }
+    return opacitySpeedNormal + (opacitySpeedLight - opacitySpeedNormal) * this.transitionProgress
   }
 }
 
