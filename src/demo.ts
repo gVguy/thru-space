@@ -10,7 +10,11 @@ button!.addEventListener('click', () => {
   thruSpace.toggleSpeed()
 })
 
-const create = (opts?: Opts) => new ThruSpace(canvas, opts).start()
+const create = (opts?: Opts) => {
+  const thruSpace = new ThruSpace(canvas, opts).start()
+  ;(window as any).thruSpace = thruSpace
+  return thruSpace
+}
 
 const recreate = () => {
   const wasSpeedOfLight = thruSpace.isLightSpeed
