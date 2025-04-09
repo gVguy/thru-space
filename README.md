@@ -7,7 +7,7 @@ A tiny dependency-free javascript library for creating an effect of **flying thr
 <p align="center">✨ <b><a href="https://gvguy.github.io/thru-space/">Live interactive demo</a></b> ✨</p>
 
 <p align="center">
-  <img alt="flying thru space" src="https://i.imgur.com/afE6APF.gif">
+  <img alt="Flying thru space" src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExdnlrNjBuNXRvbnN0ZDZqZXltdmk1eTRoeGZubnU5aG1scGZlZ3pheiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/X0dJGrOR0q1ExlBRXg/giphy.gif">
 </p>
 
 ## Installation
