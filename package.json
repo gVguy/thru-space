@@ -1,6 +1,6 @@
 {
   "name": "thru-space",
-  "description": "Travel through space at lightspeed!",
+  "description": "Travel through space at light speed!",
   "version": "0.0.1",
   "type": "module",
   "scripts": {
@@ -8,8 +8,17 @@
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
+  "exports": {
+    ".": {
+      "import": "./dist/thru-space.js",
+      "types": "./dist/thru-space.d.ts"
+    }
+  },
+  "files": ["dist"],
   "devDependencies": {
+    "@types/node": "^22.14.0",
     "typescript": "~5.7.2",
-    "vite": "^6.2.0"
+    "vite": "^6.2.0",
+    "vite-plugin-dts": "^4.5.3"
   }
 }

@@ -2,7 +2,7 @@
 
 Add space travel to your website! 
 
-A tiny javascript library for creating an effect of **flying through the universe at lightspeed** and rendering it on a canvas.
+A tiny dependency-free javascript library for creating an effect of **flying through the universe at light speed** and rendering it on a canvas.
 
 <p align="center">✨ <b><a href="https://gvguy.github.io/thru-space/">Live interactive demo</a></b> ✨</p>
 
@@ -69,7 +69,7 @@ Stops the animation loop and disconnects resize observer. Call it if you're goin
 
 ### lightSpeed()
 
-Transitions to lightspeed!
+Transitions to light speed!
 
 ### normalSpeed()
 
@@ -81,7 +81,7 @@ Toggles between the two speed modes.
 
 ### isLightSpeed
 
-`true` if currently in lightspeed mode, otherwise `false`.
+`true` if currently in light speed mode, otherwise `false`.
 
 ## Options
 
@@ -105,7 +105,7 @@ Controls speed in normal mode.
 
 Default: `15`
 
-Controls speed in lightspeed mode.
+Controls speed in light speed mode.
 
 ### transitionSpeed
 
@@ -129,4 +129,4 @@ Star sizes are randomized, this controls the lower limit.
 
 Default: `0.3`
 
-Controls the length of the trail behind stars in lightspeed mode.
+Controls the length of the trail behind stars in light speed mode.
