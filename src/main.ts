@@ -16,7 +16,7 @@ export class ThruSpace {
   private canvasHeight = 0
   private stars: Star[] = []
   private animationFrameId: number | null = null
-  private transitionProgress: number = 0
+  private transitionProgress = 0
   private abortController: AbortController = new AbortController()
 
   // opts
@@ -43,6 +43,18 @@ export class ThruSpace {
     this.resizeCanvas()
     window.addEventListener('resize', () => this.resizeCanvas(), { signal: this.abortController.signal })
     this.initStars()
+  }
+
+  private get starOpacitySpeedNormal() {
+    return this.speedNormal * 0.002
+  }
+  private get starOpacitySpeedLight() {
+    return this.speedLight * 0.00333
+  }
+  private get starOpacitySpeed() {
+    if (!!this.transitionProgress)
+      return this.starOpacitySpeedLight
+    return this.starOpacitySpeedNormal
   }
 
   private resizeCanvas() {
@@ -125,6 +137,8 @@ export class ThruSpace {
     const centerX = this.canvasWidth / 2
     const centerY = this.canvasHeight / 2
 
+    const starOpacitySpeed = this.starOpacitySpeed
+    
     this.stars.forEach(star => {
       const dx = star.x - centerX
       const dy = star.y - centerY
@@ -133,7 +147,7 @@ export class ThruSpace {
       star.y += dy * currentSpeed * star.speedFactor
       
       if (star.opacity < star.maxOpacity) {
-        star.opacity += !!this.transitionProgress ? 0.05 : 0.001
+        star.opacity = Math.min(star.maxOpacity, star.opacity + starOpacitySpeed)
       }
       
       // tail line

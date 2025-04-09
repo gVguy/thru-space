@@ -79,3 +79,7 @@ button:hover {
   color: #61c3fb;
   padding: none;
 }
+
+#toggle {
+  width: 100%;
+}
