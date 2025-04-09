@@ -28,6 +28,7 @@ h1 {
   line-height: 1.1;
   margin: 0;
   font-family: VT323;
+  text-shadow: #338dc2 2px 2px 0;
 }
 
 #app {
@@ -75,6 +76,18 @@ button:hover {
   grid-template-columns: 200px 69px 90px;
   text-align: left;
 }
+@media screen and (max-width: 500px) {
+  #opts label {
+    display: grid;
+    grid-template-columns: 200px 69px;
+  }
+  #opts input {
+    grid-column: 1 / span 2;
+  }
+  #opts span {
+    text-align: right;
+  }
+}
 
 #reset {
   background: none;
@@ -84,4 +97,12 @@ button:hover {
 
 #toggle {
   width: 100%;
+}
+
+#github {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: inherit;
+  text-decoration: none;
 }

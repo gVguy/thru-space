@@ -3,6 +3,11 @@
   "description": "Travel through space at light speed!",
   "version": "0.0.1",
   "type": "module",
+  "author": "Ivan Che",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gVguy/thru-space.git"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
