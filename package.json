@@ -1,7 +1,8 @@
 {
   "name": "thru-space",
   "description": "Travel through space at light speed!",
-  "version": "0.0.2",
+  "keywords": ["animation", "canvas", "fly", "universe", "space", "stars", "light", "speed"],
+  "version": "0.0.3",
   "type": "module",
   "author": "Ivan Che",
   "license": "MIT",
@@ -15,10 +16,14 @@
     "build:demo": "vite build -c vite-demo.config.ts",
     "preview": "vite preview"
   },
+  "main": "./dist/thru-space.umd.cjs",
+  "module": "./dist/thru-space.js",
+  "types": "./dist/thru-space.d.ts",
   "exports": {
     ".": {
       "import": "./dist/thru-space.js",
-      "types": "./dist/thru-space.d.ts"
+      "types": "./dist/thru-space.d.ts",
+      "require": "./dist/thru-space.umd.cjs"
     }
   },
   "files": [
