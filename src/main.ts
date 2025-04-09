@@ -8,7 +8,7 @@ export type Opts = {
   lightSpeedTailLength: number
 }
 
-export class ThruSpace {
+export default class ThruSpace {
   isLightSpeed: boolean = false
   private canvas: HTMLCanvasElement
   private ctx: CanvasRenderingContext2D

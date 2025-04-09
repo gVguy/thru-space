@@ -18,10 +18,8 @@ A tiny dependency-free javascript library for creating an effect of **flying thr
 npm i thru-space
 ```
 
-... and then ...
-
 ```js
-import { ThruSpace } from 'thru-space'
+import ThruSpace from 'thru-space'
 ```
 
 ### CDN
@@ -37,7 +35,7 @@ Provide a canvas element as the first argument.
 ```js
 const canvas = document.querySelector('#canvas')
 
-const thruSpace = ThruSpace(canvas).start()
+const thruSpace = new ThruSpace(canvas).start()
 ```
 
 **⚠️ Important: set canvas size with styles.** thru-space internally manages canvas size attributes and context scale. In order to look sharp on displays with various DPRs it will observe the size of the canvas and override its `width` and `height` attributes. However, *to allow setting custom size with CSS, it doesn't apply inline styles to scale it back down*.

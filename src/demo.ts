@@ -1,5 +1,5 @@
 import './style.css'
-import { Opts, ThruSpace } from './main'
+import ThruSpace, { Opts } from './main'
 
 const canvas = document.querySelector('#canvas') as HTMLCanvasElement
 const button = document.querySelector('#toggle')
