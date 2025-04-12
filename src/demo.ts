@@ -2,11 +2,14 @@ import './style.css'
 import ThruSpace, { Opts } from './main'
 
 const canvas = document.querySelector('#canvas') as HTMLCanvasElement
-const button = document.querySelector('#toggle')
+const toggleSpeedButton = document.querySelector('#toggle')
 const optsEl = document.querySelector('#opts')
 const resetOptsButton = document.querySelector('#reset')
+const minifyButton = document.querySelector('#minify')
+const expandButton = document.querySelector('#expand')
+const appEl = document.querySelector('#app')
 
-button!.addEventListener('click', () => {
+toggleSpeedButton!.addEventListener('click', () => {
   thruSpace.toggleSpeed()
 })
 
@@ -94,3 +97,9 @@ resetOptsButton!.addEventListener('click', () => {
   recreate()
 })
 
+minifyButton?.addEventListener('click', () => {
+  appEl?.classList.add('minified')
+})
+expandButton?.addEventListener('click', () => {
+  appEl?.classList.remove('minified')
+})

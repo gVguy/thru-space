@@ -33,7 +33,6 @@ h1 {
 
 #app {
   position: relative;
-  max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
@@ -44,7 +43,7 @@ h1 {
 }
 
 canvas {
-  position: absolute;
+  position: fixed;
   inset: 0;
   width: 100dvw;
   height: 100dvh;
@@ -62,17 +61,27 @@ button {
   cursor: pointer;
   transition: background-color 0.25s;
   color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 @media (hover:hover) {
   button:hover {
     background-color: #61c3fb;
   }
 }
+button.secondary {
+  background: none;
+  color: #61c3fb;
+  padding: none;
+}
 
 #opts {
   display: flex;
   flex-direction: column;
   gap: 5px;
+  transition: height .4s;
 }
 #opts label {
   display: grid;
@@ -92,12 +101,6 @@ button {
   }
 }
 
-#reset {
-  background: none;
-  color: #61c3fb;
-  padding: none;
-}
-
 #toggle {
   width: 100%;
 }
@@ -108,4 +111,56 @@ button {
   gap: 10px;
   color: inherit;
   text-decoration: none;
+}
+
+#actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+#expand {
+  display: none;
+}
+
+#app.minified {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem;
+  gap: 12px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  text-align: left;
+}
+#app.minified h1 {
+  margin-right: auto;
+}
+#app.minified #toggle {
+  width: fit-content;
+}
+#app.minified #expand {
+  display: block;
+}
+#app.minified button span,
+#app.minified a span,
+#app.minified #opts,
+#app.minified #minify,
+#app.minified #reset {
+  display: none;
+}
+#app.minified button,
+#app.minified #github {
+  padding: 0.6em;
+}
+#app.minified #actions {
+  gap: inherit;
+}
+@media screen and (max-width: 420px) {
+  #app.minified h1 {
+    width: 100%;
+    order: 22;
+  }
 }
