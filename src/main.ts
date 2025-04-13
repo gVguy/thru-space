@@ -1,11 +1,19 @@
+import { mixColor, RGB } from './mixColor'
+import { MaybeRandom, resolveMaybeRandom } from './random'
+
 export type Opts = {
   starsPerPx: number
   speedNormal: number
   speedLight: number
   transitionSpeed: number
-  starMaxSize: number
-  starMinSize: number
+  starSize: MaybeRandom
   lightSpeedTailLength: number
+  starColor: {
+    base?: RGB
+    additional?: RGB[]
+    mix?: MaybeRandom
+  }
+  isInitialLightSpeed: boolean
 }
 
 export default class ThruSpace {
@@ -24,9 +32,11 @@ export default class ThruSpace {
   private speedNormal: number
   private speedLight: number
   private transitionSpeed: number
-  private starMaxSize: number
-  private starMinSize: number
+  private starSize: MaybeRandom
   private lightSpeedTailLength: number
+  private colorBase: RGB
+  private additionalColors: RGB[]
+  private colorMix: MaybeRandom
   
   constructor(canvas: HTMLCanvasElement, opts?: Partial<Opts>) {
     this.canvas = canvas
@@ -34,12 +44,19 @@ export default class ThruSpace {
     this.speedNormal = opts?.speedNormal ?? 0.5
     this.speedLight = opts?.speedLight ?? 15
     this.transitionSpeed = opts?.transitionSpeed ?? 0.2
-    this.starMaxSize = opts?.starMaxSize ?? 3
-    this.starMinSize = opts?.starMinSize ?? 1
+    this.starSize = opts?.starSize ?? { min: 1, max: 3 }
     this.lightSpeedTailLength = opts?.lightSpeedTailLength ?? 0.3
     const starsPerPx = opts?.starsPerPx ?? 0.0005
     const MAX_STARS_PER_PX = 0.05
     this.starsPerPx = Math.min(starsPerPx, MAX_STARS_PER_PX)
+    this.colorBase = opts?.starColor?.base ?? [255,255,255]
+    this.additionalColors = opts?.starColor?.additional ?? []
+    this.colorMix = opts?.starColor?.mix ?? { min: 0, max: 1 }
+
+    if (opts?.isInitialLightSpeed) {
+      this.isLightSpeed = true
+      this.transitionProgress = 1
+    }
 
     this.ctx = canvas.getContext('2d')!
 
@@ -78,13 +95,16 @@ export default class ThruSpace {
   }
 
   private addOneStar() {
-    this.stars.push(new Star({
+    const opacity = Math.random() * 0.7 + 0.3
+    this.stars.push({
       x: Math.random() * this.canvasWidth, 
       y: Math.random() * this.canvasHeight,
-      size: this.starMinSize + (Math.random() * (this.starMaxSize - this.starMinSize)),
-      opacity: Math.random() * 0.7 + 0.3,
+      size: resolveMaybeRandom(this.starSize),
+      opacity,
+      maxOpacity: opacity,
       speedFactor: Math.random() * 0.002 + 0.001,
-    }))
+      rgbColor: this.getStarColor()
+    })
   }
 
   start() {
@@ -160,8 +180,8 @@ export default class ThruSpace {
       const endX = star.x - dx * tailLength
       const endY = star.y - dy * tailLength
       const gradient = this.ctx.createLinearGradient(endX, endY, star.x, star.y)
-      gradient.addColorStop(0, this.getStarFillStyle(0))
-      gradient.addColorStop(1, this.getStarFillStyle(star.opacity))
+      gradient.addColorStop(0, 'transparent')
+      gradient.addColorStop(1, this.getStarFillStyle(star))
       this.ctx.strokeStyle = gradient
       this.ctx.lineWidth = star.size
       this.ctx.moveTo(endX, endY)
@@ -169,7 +189,7 @@ export default class ThruSpace {
       this.ctx.stroke()
       // circle
       this.ctx.beginPath()
-      this.ctx.fillStyle = this.getStarFillStyle(star.opacity)
+      this.ctx.fillStyle = this.getStarFillStyle(star)
       this.ctx.arc(star.x, star.y, star.size / 2, 0, Math.PI * 2)
       this.ctx.fill()
 
@@ -185,8 +205,8 @@ export default class ThruSpace {
     }
   }
 
-  private getStarFillStyle(opacity: number) {
-    return `rgba(255, 255, 255, ${opacity})`
+  private getStarFillStyle(star: Star) {
+    return `rgba(${star.rgbColor}, ${star.opacity})`
   }
 
   private getStarCount() {
@@ -201,22 +221,19 @@ export default class ThruSpace {
     }
     return opacitySpeedNormal + (opacitySpeedLight - opacitySpeedNormal) * this.transitionProgress
   }
+
+  private getStarColor() {
+    const color = mixColor(this.colorBase, this.additionalColors, this.colorMix)
+    return color.join(',')
+  }
 }
 
-class Star {
+type Star = {
   x: number
   y: number
   size: number
   opacity: number
   maxOpacity: number
   speedFactor: number
-  
-  constructor(opts: Omit<Star, 'maxOpacity'>) {
-    this.x = opts.x
-    this.y = opts.y
-    this.size = opts.size
-    this.opacity = opts.opacity
-    this.maxOpacity = opts.opacity
-    this.speedFactor = opts.speedFactor
-  }
+  rgbColor: string
 }

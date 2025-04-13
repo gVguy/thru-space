@@ -50,10 +50,12 @@ canvas {
   pointer-events: none;
 }
 
+button, a {
+  padding: 0.6em 1.2em;
+}
 button {
   border-radius: 8px;
   border: 1px solid transparent;
-  padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
@@ -77,19 +79,52 @@ button.secondary {
   padding: none;
 }
 
-#opts {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  transition: height .4s;
+#opts details {
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 3px;
 }
-#opts label {
+#opts details summary {
+  text-align: left;
+  cursor: pointer;
+  appearance: none;
+}
+#opts details .title::before {
+  display: inline-block;
+  content: '▶';
+  margin-right: 4px;
+}
+#opts details:open .title::before {
+  transform: rotate(90deg);
+}
+#opts details:open summary .value-display {
+  display: none;
+}
+#opts details:open summary {
+  border-bottom: 1px solid rgba(255,255,255,0.3);
+}
+
+#opts details,
+#opts .label,
+#opts details:open summary {
+  margin-bottom: 5px;
+}
+#opts .label,
+#opts summary {
+  padding: 0 4px;
+}
+#opts .label,
+#opts summary {
   display: grid;
   grid-template-columns: 200px 69px 90px;
   text-align: left;
 }
+#opts select,
+#opts details summary .value-display,
+#opts .color-array {
+  grid-column: 2 / span 2;
+}
 @media screen and (max-width: 500px) {
-  #opts label {
+  #opts .label {
     display: grid;
     grid-template-columns: 200px 69px;
   }
@@ -99,6 +134,27 @@ button.secondary {
   #opts span {
     text-align: right;
   }
+}
+
+#opts .color-array ul {
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 3px;
+  margin: 0;
+}
+#opts .color-array li {
+  display: flex;
+  align-items: center;
+}
+#opts .color-array li button {
+  /* background: none; */
+  padding: 0 6px;
+  height: 100%;
+}
+#opts .color-array .add-color {
+  padding: 0;
 }
 
 #toggle {
