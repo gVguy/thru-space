@@ -10,11 +10,14 @@ export type RangeControl = Control<{
 export function createRange(control: RangeControl) {
   const input = document.createElement('input')
   input.type = 'range'
+  input.className = 'range'
   input.max = String(control.max)
   input.min = String(control.min)
   input.step = String(control.step)
 
   const valueDisplay = document.createElement('span')
+  valueDisplay.className = 'value-display'
+  
   input.addEventListener('input', (e) => {
     const target = e.target as HTMLInputElement
     valueDisplay.textContent = target.value

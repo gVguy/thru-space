@@ -7,6 +7,7 @@ export type ColorControl = Control<{
 export function createColor(control: ColorControl) {
   const input = document.createElement('input')
   input.type = 'color'
+  input.className = 'color'
 
   addCommonChangeListener(control, input)
 

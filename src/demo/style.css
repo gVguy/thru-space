@@ -102,6 +102,9 @@ button.secondary {
 #opts details:open summary {
   border-bottom: 1px solid rgba(255,255,255,0.3);
 }
+#opts details summary::-webkit-details-marker {
+  display: none;
+}
 
 #opts details,
 #opts .label,
@@ -124,15 +127,22 @@ button.secondary {
   grid-column: 2 / span 2;
 }
 @media screen and (max-width: 500px) {
-  #opts .label {
-    display: grid;
+  #opts .label  {
     grid-template-columns: 200px 69px;
   }
-  #opts input {
+  #opts summary  {
+    grid-template-columns: 120px 149px;
+  }
+  #opts input.range {
     grid-column: 1 / span 2;
   }
-  #opts span {
+  #opts .value-display {
     text-align: right;
+  }
+  #opts select,
+  #opts details summary .value-display,
+  #opts .color-array {
+    grid-column: 2;
   }
 }
 
@@ -149,7 +159,6 @@ button.secondary {
   align-items: center;
 }
 #opts .color-array li button {
-  /* background: none; */
   padding: 0 6px;
   height: 100%;
 }
