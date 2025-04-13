@@ -93,13 +93,13 @@ button.secondary {
   content: '▶';
   margin-right: 4px;
 }
-#opts details:open .title::before {
+#opts details[open] .title::before {
   transform: rotate(90deg);
 }
-#opts details:open summary .value-display {
+#opts details[open] summary .value-display {
   display: none;
 }
-#opts details:open summary {
+#opts details[open] summary {
   border-bottom: 1px solid rgba(255,255,255,0.3);
 }
 #opts details summary::-webkit-details-marker {
@@ -108,7 +108,7 @@ button.secondary {
 
 #opts details,
 #opts .label,
-#opts details:open summary {
+#opts details[open] summary {
   margin-bottom: 5px;
 }
 #opts .label,
