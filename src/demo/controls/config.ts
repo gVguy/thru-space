@@ -116,7 +116,7 @@ export const controls: Controls = [
   {
     name: 'Star color',
     type: 'group',
-    getValue: () => `${demoOpts.starColor.additional.length} colors, mix: ${demoOpts.starColor.mix.min}-${demoOpts.starColor.mix.max}`,
+    getValue: () => `${demoOpts.starColor.additional.length} color${demoOpts.starColor.additional.length == 1 ? '' : 's'}, mix: ${demoOpts.starColor.mix.min}-${demoOpts.starColor.mix.max}`,
     controls: [
       {
         name: 'Base color',
